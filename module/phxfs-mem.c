@@ -165,7 +165,8 @@ int phxfs_map_dev_addr_inner(phxfs_mmap_buffer_t mbuffer, u64 devaddr, u64 dev_l
     mbuffer->map->release = release_gpu_memory;
     mbuffer->map->size = dev_len;
     mbuffer->map->gpuvaddr = devaddr;
-    mbuffer->map->n_addrs = mbuffer->dev_page_num; 
+    mbuffer->map->n_addrs = mbuffer->dev_page_num;
+    mbuffer->map->pages = NULL;
     for (i = 0; i < mbuffer->map->n_addrs; ++i)
     {
         mbuffer->map->addrs[i] = 0;
