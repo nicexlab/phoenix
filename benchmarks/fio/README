@@ -1,0 +1,30 @@
+# FIO engine for phoenix
+
+This repository contains the fio external plugin used for benchmarking phoenix.
+> Note: We referred to the implementation of [3FS USRBIO](https://github.com/deepseek-ai/3FS/tree/main/benchmarks/fio_usrbio)
+
+
+## How to Build
+
+### 1. build fio
+
+```shell
+git submodule update --init --recursive
+cd third-party/fio
+./configure && make -j && sudo make 
+```
+### 2. build ioengine
+```shell
+cd benchmarks/fio && make
+```
+
+### Usage
+We have provided an example for how to use this engine (see test.fio for details).
+
+To use io_uring backend, please set these four parameters simultaneously:
+```shell
+iodepth=1024
+iodepth_batch_submit=1024
+iodepth_batch_complete_min=1024
+iodepth_batch_complete_max=1024
+```

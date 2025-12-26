@@ -12,3 +12,4 @@ scripts/results*
 sc25/result*
 sc25/logs/*
 build/
+*.so
