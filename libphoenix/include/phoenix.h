@@ -17,6 +17,10 @@
 #include <cuda_runtime.h>
 #include "common.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct phxfs_fileid {
     int fd;
     int deviceID;
@@ -55,5 +59,9 @@ cudaError_t phxfs_write_async(phxfs_fileid_t fid,
                             size_t nbytes, off_t offset,
                             ssize_t *bytes_done,
                             CUstream stream);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
