@@ -302,13 +302,13 @@ static void *sync_write_thread(void *arg){
         clock_gettime(CLOCK_MONOTONIC, &io_start);
         ssize_t result = phxfs_write(fid, data->gpu_buffer, done_bytes, 
                                     data->io_size, data->offset + done_bytes);
-        if (result != io_size) {
-            pr_error("read_thread error");
-            return NULL;
-        }
         if (result == 0) {
             // End of file reached
             break;
+        }
+        if (result != io_size) {
+            pr_error("read_thread error");
+            return NULL;
         }
         clock_gettime(CLOCK_MONOTONIC, &io_end);
         io_time = (io_end.tv_sec - io_start.tv_sec) * 1000000000LL + (io_end.tv_nsec - io_start.tv_nsec);
@@ -339,7 +339,6 @@ static void *sync_read_thread(void *arg){
     repeated = data->size / data->io_size;
     if (data->size / data->io_size < 1000){
         repeated = 1000 / (data->size / data->io_size) + 1;
-        printf("repeated is %d\n", repeated);
     } else {
         repeated = 1;
     }
@@ -351,13 +350,13 @@ static void *sync_read_thread(void *arg){
             clock_gettime(CLOCK_MONOTONIC, &io_start);
             ssize_t result = phxfs_read(fid, data->gpu_buffer, 
                 0, data->io_size, data->offset + done_bytes);
-            if (result != io_size) {
-                printf("read_thread error, result is %lu, size is %lu\n",result, data->io_size);
-                return NULL;
-            }
             if (result == 0) {
                 // End of file reached
                 break;
+            }
+            if (result != io_size) {
+                printf("read_thread error, result is %lu, size is %lu\n",result, data->io_size);
+                return NULL;
             }
             clock_gettime(CLOCK_MONOTONIC, &io_end);
             io_time = (io_end.tv_sec - io_start.tv_sec) * 1000000000LL + (io_end.tv_nsec - io_start.tv_nsec);;
@@ -498,8 +497,10 @@ int run_phxfs(GDSOpts opts){
     pr_info("Total IO operations: " << total_io_operations);
     average_io_bandwidth = (((double)total_io_operations * opts.io_size * opts.io_depth)/(MB) ) / (1.0 * prog_time / 1000000000.0);
     pr_info("Average IO bandwidth: " << average_io_bandwidth << " MB/s");
-    average_io_latency = (double)total_io_time / (total_io_operations * 1000.0);
-    pr_info("Average IO latency: " << average_io_latency << " us");
+    if (total_io_operations != 0) {
+        average_io_latency = (double)total_io_time / (total_io_operations * 1000.0);
+        pr_info("Average IO latency: " << average_io_latency << " us");
+    }
     get_percentile(latency_vec);
 
     for (int i =0 ;i < opts.num_threads; i++){
@@ -510,7 +511,6 @@ int run_phxfs(GDSOpts opts){
         }
         check_cudaruntimecall(cudaFree(threads[i].data.gpu_buffer));
     }
-
 out: 
     phxfs_close(fid.deviceID);
     close(file_fd);

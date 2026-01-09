@@ -31,13 +31,13 @@ static void *write_thread(void *arg) {
         data->gpu_buffer, data->io_size, 
         data->offset + written,  written);
         
-        if (result != io_size) {
-            printf("write_thread error, result is %lu, size is %lu\n",result, data->io_size);
-            return NULL;
-        }
         if (result == 0) {
             // End of file reached
             break;
+        }
+        if (result != io_size) {
+            printf("write_thread error, result is %lu, size is %lu\n",result, data->io_size);
+            return NULL;
         }
         // check_cudaruntimecall(cudaStreamSynchronize(0));
         clock_gettime(CLOCK_MONOTONIC, &io_end);
@@ -67,13 +67,13 @@ static void *read_thread(void *arg) {
         data->gpu_buffer, data->io_size,
         data->offset + read_bytes, 0);
         cudaStreamSynchronize(0);
-        if (result != io_size) {
-            printf("read_thread error, result is %lu, size is %lu\n",result, data->io_size);
-            return NULL;
-        }
         if (result == 0) {
             // End of file reached
             break;
+        }
+        if (result != io_size) {
+            printf("read_thread error, result is %lu, size is %lu\n",result, data->io_size);
+            return NULL;
         }
         clock_gettime(CLOCK_MONOTONIC, &io_end);
         read_bytes += result;

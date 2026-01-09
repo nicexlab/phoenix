@@ -16,7 +16,7 @@ io_sizes = [4, 8, 16, 32, 64, 128, 256, 512, 1024]
 threads = [1, 2, 4, 8, 16, 32, 64, 128]
 batch_sizes = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 
-read_write = ["read" "write"]
+read_write = ["read", "write"]
 file_path = os.path.dirname(os.path.realpath(__file__))
 micro_exec = os.path.join(file_path, "..", "build", "bin", "microbenchmark")
 
@@ -83,13 +83,13 @@ if __name__ == "__main__":
     device_type_str = sys.argv[3].lower()    # 0 - nvme / 1 - nvmeof
     FILE_PATH = sys.argv[4]
 
-    xfer_mode_map  = {"phxfs": 0, "gds": 1}
+    xfer_mode_map  = {"phxfs": 0, "gds": 1, "posix": 2}
     run_mode_map   = {"sync": 0, "async": 1, "batch": 2}
     device_type_map = { "nvme": "0", "nvmeof": "1" }
 
     
     if xfer_mode_str not in xfer_mode_map:
-        Log.error("Invalid xfer_mode. Must be 'phxfs' or 'gds'.")
+        Log.error("Invalid xfer_mode. Must be 'phxfs' or 'gds' or 'posix'.")
         sys.exit(1)
     if run_mode_str not in run_mode_map:
         Log.error("Invalid mode. Must be 'sync', 'async' or 'batch'.")
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         Log.error("Invalid device type. Must be 0 (nvme) or 1 (nvmeof).")
         sys.exit(1)
 
-    xfer_mode   = xfer_mode_map[xfer_mode_str]   # 0 / 1
+    xfer_mode   = xfer_mode_map[xfer_mode_str]   # 0 / 1 / 2
     async_mode  = run_mode_map[run_mode_str]     # 0 / 1 / 2
     device_type = device_type_map[device_type_str]           # 0 / 1 
     
@@ -116,18 +116,6 @@ if __name__ == "__main__":
     # change the config to test different modes
     # for example, config.muti_thread indicates that multi-threading testing will be conducted
     config.muti_size = True
+    config.muti_thread = True
     x_thread_y_size_z_batch(config)
     config.reset()
-
-    
-    
-    
-    
-
-
-
-
-    
-
-
-                    
