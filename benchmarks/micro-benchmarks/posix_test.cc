@@ -58,7 +58,7 @@ static void *read_thread(void *arg) {
     while (read_bytes < data->size) {
         clock_gettime(CLOCK_MONOTONIC, &io_start); 
         result = pread(fd, 
-            point_offset(data->buffer, read_bytes), 
+            data->buffer,
             data->io_size, data->offset + read_bytes);
         if (result == 0) {
             // End of file reached
@@ -69,8 +69,8 @@ static void *read_thread(void *arg) {
             return NULL;
         }
         check_cudaruntimecall(cudaMemcpy(
-            point_offset(data->gpu_buffer, data->offset + read_bytes),
-            point_offset(data->buffer, read_bytes), 
+            data->gpu_buffer,
+            data->buffer,
             data->io_size, cudaMemcpyHostToDevice));
         check_cudaruntimecall(cudaStreamSynchronize(0));
         clock_gettime(CLOCK_MONOTONIC, &io_end);
