@@ -123,7 +123,7 @@ static int phxfs_ctrl_init(struct phxfs_ctrl *dev_ctrl, u32 dev_num) {
 			printk("npu%u: pci_get_domain_bus_and_slot failed\n", i);
 			return -1;
 		}
-		for (j = 0; j < PCI_NUM_RESOURCES; j++) {
+		for (j = 0; j < PCI_STD_NUM_BARS; j++) {
 			size = pci_resource_len(dev_ctrl->phx_dev[i].dev, j);
 			if (size > dev_ctrl->phx_dev[i].size){
 				dev_ctrl->phx_dev[i].paddr = pci_resource_start(dev_ctrl->phx_dev[i].dev, j);
